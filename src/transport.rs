@@ -149,7 +149,7 @@ pub fn transport_channel(buffer_size: usize,
 }
 
 impl TransportSender {
-    fn send<T: Packet>(&mut self, packet: T, dst: util::IpAddr) -> io::Result<usize> {
+    fn send<T: Packet>(&mut self, packet: &T, dst: util::IpAddr) -> io::Result<usize> {
         let mut caddr = unsafe { mem::zeroed() };
         let sockaddr = match dst {
             util::IpAddr::V4(ip_addr) =>
@@ -165,17 +165,20 @@ impl TransportSender {
 
     /// Send a packet to the provided desination
     #[inline]
-    pub fn send_to<T: Packet>(&mut self, packet: T, destination: util::IpAddr) -> io::Result<usize> {
+    pub fn send_to<T: Packet>(&mut self,
+                              packet: &T,
+                              destination: util::IpAddr)
+                              -> io::Result<usize> {
         self.send_to_impl(packet, destination)
     }
 
     #[cfg(all(not(target_os = "freebsd"), not(target_os = "macos")))]
-    fn send_to_impl<T: Packet>(&mut self, packet: T, dst: util::IpAddr) -> io::Result<usize> {
+    fn send_to_impl<T: Packet>(&mut self, packet: &T, dst: util::IpAddr) -> io::Result<usize> {
         self.send(packet, dst)
     }
 
     #[cfg(any(target_os = "freebsd", target_os = "macos"))]
-    fn send_to_impl<T: Packet>(&mut self, packet: T, dst: util::IpAddr) -> io::Result<usize> {
+    fn send_to_impl<T: Packet>(&mut self, packet: &T, dst: util::IpAddr) -> io::Result<usize> {
         use packet::MutablePacket;
         use packet::ipv4::MutableIpv4Packet;
 
@@ -187,7 +190,7 @@ impl TransportSender {
             let mut mut_slice: Vec<u8> = repeat(0u8).take(packet.packet().len()).collect();
 
             let mut new_packet = MutableIpv4Packet::new(&mut mut_slice[..]).unwrap();
-            new_packet.clone_from(&packet);
+            new_packet.clone_from(packet);
             let length = new_packet.get_total_length().to_be();
             new_packet.set_total_length(length);
             {
@@ -197,7 +200,7 @@ impl TransportSender {
                 d[6] = (host_order >> 8) as u8;
                 d[7] = host_order as u8;
             }
-            return self.send(new_packet, dst);
+            return self.send(&new_packet, dst);
         }
 
         self.send(packet, dst)

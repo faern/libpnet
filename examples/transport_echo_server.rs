@@ -46,7 +46,7 @@ fn main() {
                 new_packet.set_destination(packet.get_source());
 
                 // Send the packet
-                match tx.send_to(new_packet, addr) {
+                match tx.send_to(&new_packet, addr) {
                     Ok(n) => assert_eq!(n, packet.packet().len()),
                     Err(e) => panic!("failed to send packet: {}", e)
                 }

@@ -207,7 +207,7 @@ fn layer4(ip: IpAddr, header_len: usize) {
     });
 
     rx.recv().unwrap();
-    match ttx.send_to(udp, ip) {
+    match ttx.send_to(&udp, ip) {
         Ok(res) => assert_eq!(res as usize, UDP_HEADER_LEN + TEST_DATA_LEN),
         Err(e) => panic!("layer4_test failed: {}", e),
     }
@@ -282,7 +282,7 @@ fn layer3_ipv4() {
 
 
     rx.recv().unwrap();
-    match ttx.send_to(Ipv4Packet::new(&packet[..]).unwrap(), send_addr) {
+    match ttx.send_to(&Ipv4Packet::new(&packet[..]).unwrap(), send_addr) {
         Ok(res) => assert_eq!(res as usize, packet.len()),
         Err(e) => panic!("layer3_ipv4_test failed: {}", e),
     }
