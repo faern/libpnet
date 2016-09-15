@@ -883,9 +883,7 @@ fn generate_packet_impl(cx: &mut GenContext, packet: &Packet, mutable: bool, nam
         #[inline]
         pub fn to_immutable<'p>(&'p self) -> {imm_name}<'p> {{
             use ::pnet::packet::PacketData;
-            match *self {{
-                {name} {{ ref packet }} => {imm_name} {{ packet: PacketData::Borrowed(packet.as_slice()) }}
-            }}
+            {imm_name} {{ packet: PacketData::Borrowed(self.packet.as_slice()) }}
         }}
 
         /// Maps from a {name} to a {imm_name} while consuming the source
