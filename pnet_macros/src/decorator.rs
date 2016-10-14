@@ -869,7 +869,7 @@ fn generate_packet_impl(cx: &mut GenContext, packet: &Packet, mutable: bool, nam
 
         /// Constructs a new {name}. If the provided buffer is less than the minimum required
         /// packet size, this will return None. With this constructor the {name} will
-        /// own its own data and the underlying buffer will be dropped when {name} is.
+        /// own its own data and the underlying buffer will be dropped when the {name} is.
         pub fn owned(packet: Box<[u8]>) -> Option<{name}<'static>> {{
             if packet.len() >= {name}::minimum_packet_size() {{
                 use ::pnet::packet::{cap_mut}PacketData;
